@@ -45,42 +45,6 @@ A neon-themed Flutter BMI calculator with interactive elements, animation effect
    ```
    flutter run
    ```
-
-### Building for Web
-
-1. Use the included build script:
-   ```
-   ./build_web.sh
-   ```
-
-2. Or manually build:
-   ```
-   flutter build web --web-renderer canvaskit --release
-   ```
-
-3. The built web app will be located in the `build/web` directory.
-
-## Deployment
-
-### Using Docker
-
-1. Build the Flutter web app:
-   ```
-   ./build_web.sh
-   ```
-
-2. Build the Docker image:
-   ```
-   docker build -t neonfit-bmi-calculator .
-   ```
-
-3. Run the Docker container:
-   ```
-   docker run -p 8080:80 neonfit-bmi-calculator
-   ```
-
-4. Access the app at `http://localhost:8080`
-
 ## Architecture
 
 The app uses:
