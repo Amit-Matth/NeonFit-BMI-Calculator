@@ -1,0 +1,11 @@
+targets:
+  $default:
+    builders:
+      hive_generator:
+        options:
+          # Options configure how Hive code is generated
+          # Default values:
+          field_rename: snake # Optional: none | snake | kebab | pascal
+          ignore_null_limits: false
+        generate_for:
+          - lib/models/*.dart
