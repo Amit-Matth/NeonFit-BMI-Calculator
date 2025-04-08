@@ -1,0 +1,32 @@
+
+# Flutter/Dart/Pub related
+.dart_tool/
+.flutter-plugins
+.packages
+.pub-cache/
+build/
+ios/Flutter/.symlinks
+.flutter-plugins-dependencies
+.melos_tool/
+
+# Web related
+web/.dart_tool/
+web/.idea/
+web/.packages
+web/build/
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+
+# Logs
+*.log
+
+# Misc
+*.lock
+*.DS_Store
+*.swp
+
+# FVM Version Cache
+.fvm/
