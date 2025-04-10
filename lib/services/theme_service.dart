@@ -131,7 +131,7 @@ class ThemeService extends ChangeNotifier {
       );
 
   // Dark mode toggle
-  bool _isDarkMode = false;
+  bool _isDarkMode = true;
   bool get isDarkMode => _isDarkMode;
   set isDarkMode(bool value) => _isDarkMode = value;
 

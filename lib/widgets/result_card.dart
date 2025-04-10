@@ -22,6 +22,9 @@ class ResultCard extends StatelessWidget {
 
     final categoryColor = bmiRecord.getCategoryColor();
     final dateFormat = DateFormat('MMM dd, yyyy');
+    int totalInches = (bmiRecord.height / 2.54).round();
+    int feet = totalInches ~/ 12;
+    int inches = totalInches % 12;
 
     return Container(
       padding: const EdgeInsets.all(24),
@@ -132,7 +135,7 @@ class ResultCard extends StatelessWidget {
           // User details
           _buildDetailRow(
             'Height',
-            '${bmiRecord.height.toStringAsFixed(0)} cm',
+            '${feet}\' ${inches}"',
             icon: Icons.height,
             primaryColor: primaryColor,
           ).animate().fadeIn(

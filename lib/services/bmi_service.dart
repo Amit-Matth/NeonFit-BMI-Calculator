@@ -9,7 +9,7 @@ class BmiService {
   BmiService._internal();
 
   // Get the BMI records box
-  Box<BMIRecord> get _bmiRecordsBox => Hive.box<BMIRecord>('bmiRecords');
+  Box<BMIRecord> get _bmiRecordsBox => Hive.box<BMIRecord>('bmi_Records');
 
   // Get all BMI records
   List<BMIRecord> getAllRecords() {

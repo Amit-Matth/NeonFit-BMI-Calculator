@@ -30,9 +30,9 @@ class WeightAgeWidget extends StatelessWidget {
             onDecrement: () => onWeightChanged(weight > 0.5 ? weight - 0.5 : 0),
           ),
         ),
-        
+
         const SizedBox(width: 16),
-        
+
         // Age input
         Expanded(
           child: _InputCard(
@@ -69,7 +69,7 @@ class _InputCard extends StatelessWidget {
     final themeService = Provider.of<ThemeService>(context);
     final primaryColor = themeService.primaryColor;
     final accentColor = themeService.accentColor;
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       decoration: BoxDecoration(
@@ -77,7 +77,7 @@ class _InputCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: primaryColor.withOpacity(0.2),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -95,9 +95,9 @@ class _InputCard extends StatelessWidget {
               color: Colors.grey[400],
             ),
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           // Value and unit
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -122,9 +122,9 @@ class _InputCard extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Plus and minus buttons
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -135,7 +135,6 @@ class _InputCard extends StatelessWidget {
                 primaryColor: primaryColor,
                 accentColor: accentColor,
               ),
-              
               _CircularButton(
                 icon: Icons.add,
                 onPressed: onIncrement,
@@ -167,7 +166,7 @@ class _CircularButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeService = Provider.of<ThemeService>(context);
-    
+
     return GestureDetector(
       onTap: onPressed,
       child: Container(

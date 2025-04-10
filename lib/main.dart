@@ -11,18 +11,9 @@ import 'screens/home_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Hive
-  await Hive.initFlutter();
-
-  // Register Hive adapters
-  Hive.registerAdapter(BMIRecordAdapter());
-  Hive.registerAdapter(GenderAdapter());
   // Initialize the BMI Database
   final bmiDatabase = BMIDatabase();
   await bmiDatabase.init();
-
-  // Open the box before app starts
-  await Hive.openBox<BMIRecord>('bmiRecords');
 
   runApp(
     ChangeNotifierProvider(

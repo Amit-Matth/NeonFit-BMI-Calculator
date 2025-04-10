@@ -54,7 +54,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         ],
       ),
       body: ValueListenableBuilder(
-        valueListenable: Hive.box<BMIRecord>('bmiRecords').listenable(),
+        valueListenable: Hive.box<BMIRecord>('bmi_Records').listenable(),
         builder: (context, box, _) {
           final records = box.values.toList().cast<BMIRecord>();
           records.sort((a, b) => b.date.compareTo(a.date));
@@ -68,8 +68,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
             itemCount: records.length,
             itemBuilder: (context, index) {
               final record = records[index];
-              final Widget item =
-                  _buildHistoryItem(record, index, context, primaryGradient);
+
+              int totalInches = (record.height / 2.54).round();
+              int feet = totalInches ~/ 12;
+              int inches = totalInches % 12;
+
+              final Widget item = _buildHistoryItem(
+                  record, index, context, primaryGradient, feet, inches);
 
               if (enableAnimations) {
                 return item
@@ -96,7 +101,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Widget _buildHistoryItem(BMIRecord record, int index, BuildContext context,
-      List<Color> primaryGradient) {
+      List<Color> primaryGradient, int feet, int inches) {
     final dateFormat = DateFormat.yMMMd();
     final timeFormat = DateFormat.jm();
 
@@ -133,7 +138,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () {
-            _showRecordDetails(context, record);
+            _showRecordDetails(context, record, feet, inches);
           },
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -217,8 +222,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildDetailRow(Icons.height, 'Height',
-                              '${record.height}\'${record.height}"'),
+                          _buildDetailRow(
+                              Icons.height, 'Height', '${feet}\' ${inches}"'),
                           const SizedBox(height: 8),
                           _buildDetailRow(Icons.fitness_center, 'Weight',
                               '${record.weight.toStringAsFixed(1)} kg'),
@@ -227,8 +232,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               record.gender == 'male'
                                   ? Icons.male
                                   : Icons.female,
-                              'Gender / Age',
-                              '${record.gender.toString().split('.').last} / ${record.age} years'),
+                              'Gender',
+                              record.gender.toString().split('.').last),
+                          const SizedBox(height: 8),
+                          _buildDetailRow(
+                            Icons.cake,
+                            'Age',
+                            '${record.age} years',
+                          ),
                         ],
                       ),
                     ),
@@ -383,7 +394,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
     );
   }
 
-  void _showRecordDetails(BuildContext context, BMIRecord record) {
+  void _showRecordDetails(
+      BuildContext context, BMIRecord record, int feet, int inches) {
     final themeService = Provider.of<ThemeService>(context, listen: false);
     final primaryGradient = themeService.primaryGradient;
     final categoryColor = record.getCategoryColor();
@@ -394,217 +406,220 @@ class _HistoryScreenState extends State<HistoryScreen> {
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.all(16),
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.grey[900]!,
-                  Colors.grey[850]!,
-                ],
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Header
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'BMI Record Details',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        foreground: Paint()
-                          ..shader = LinearGradient(
-                            colors: primaryGradient,
-                          ).createShader(const Rect.fromLTWH(0, 0, 200, 70)),
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.close,
-                        color: Colors.grey[500],
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
+            backgroundColor: Colors.transparent,
+            insetPadding: const EdgeInsets.all(16),
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.grey[900]!,
+                    Colors.grey[850]!,
                   ],
                 ),
-
-                const SizedBox(height: 16),
-
-                // Date and time
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.grey[800]!.withOpacity(0.5),
-                  ),
-                  child: Text(
-                    '${dateFormat.format(record.date)} at ${timeFormat.format(record.date)}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[300],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-
-                // BMI Result
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    gradient: LinearGradient(
-                      colors: [
-                        categoryColor.withOpacity(0.3),
-                        categoryColor.withOpacity(0.1),
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'BMI Record Details',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            foreground: Paint()
+                              ..shader = LinearGradient(
+                                colors: primaryGradient,
+                              ).createShader(
+                                  const Rect.fromLTWH(0, 0, 200, 70)),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.close,
+                            color: Colors.grey[500],
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
                       ],
                     ),
-                    border: Border.all(
-                      color: categoryColor.withOpacity(0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        record.bmiValue.toStringAsFixed(1),
+
+                    const SizedBox(height: 16),
+
+                    // Date and time
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 6, horizontal: 12),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.grey[800]!.withOpacity(0.5),
+                      ),
+                      child: Text(
+                        '${dateFormat.format(record.date)} at ${timeFormat.format(record.date)}',
                         style: TextStyle(
-                          fontSize: 60,
-                          fontWeight: FontWeight.bold,
-                          height: 1,
-                          foreground: Paint()
-                            ..shader = LinearGradient(
-                              colors: [
-                                categoryColor,
-                                categoryColor.withOpacity(0.7),
-                              ],
-                            ).createShader(const Rect.fromLTWH(0, 0, 150, 60)),
+                          fontSize: 14,
+                          color: Colors.grey[300],
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: categoryColor.withOpacity(0.2),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // BMI Result
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        gradient: LinearGradient(
+                          colors: [
+                            categoryColor.withOpacity(0.3),
+                            categoryColor.withOpacity(0.1),
+                          ],
                         ),
-                        child: Text(
-                          record.category,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: categoryColor,
-                          ),
+                        border: Border.all(
+                          color: categoryColor.withOpacity(0.3),
+                          width: 1,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-
-                // Measurements
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildMeasurementItem(
-                        'Height',
-                        '${record.height}\'${record.height}"',
-                        Icons.height,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: _buildMeasurementItem(
-                        'Weight',
-                        '${record.weight.toStringAsFixed(1)} kg',
-                        Icons.fitness_center,
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildMeasurementItem(
-                        'Age',
-                        '${record.age} years',
-                        Icons.calendar_today,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: _buildMeasurementItem(
-                        'Gender',
-                        record.gender.toString().split('.').last,
-                        record.gender == 'male' ? Icons.male : Icons.female,
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 24),
-
-                // Health advice
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    color: Colors.grey[800]!.withOpacity(0.3),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
+                      child: Column(
                         children: [
-                          Icon(
-                            Icons.tips_and_updates,
-                            color: primaryGradient[0],
-                            size: 20,
-                          ),
-                          const SizedBox(width: 8),
                           Text(
-                            'Health Insight',
+                            record.bmiValue.toStringAsFixed(1),
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 60,
                               fontWeight: FontWeight.bold,
-                              color: primaryGradient[0],
+                              height: 1,
+                              foreground: Paint()
+                                ..shader = LinearGradient(
+                                  colors: [
+                                    categoryColor,
+                                    categoryColor.withOpacity(0.7),
+                                  ],
+                                ).createShader(
+                                    const Rect.fromLTWH(0, 0, 150, 60)),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: categoryColor.withOpacity(0.2),
+                            ),
+                            child: Text(
+                              record.category,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: categoryColor,
+                              ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        record.getRecommendation(),
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.white,
-                          height: 1.5,
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Measurements
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildMeasurementItem(
+                            'Height',
+                            '${feet}\' ${inches}"',
+                            Icons.height,
+                          ),
                         ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildMeasurementItem(
+                            'Weight',
+                            '${record.weight.toStringAsFixed(1)} kg',
+                            Icons.fitness_center,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildMeasurementItem(
+                            'Age',
+                            '${record.age} years',
+                            Icons.calendar_today,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildMeasurementItem(
+                            'Gender',
+                            record.gender.toString().split('.').last,
+                            record.gender == 'male' ? Icons.male : Icons.female,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Health advice
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        color: Colors.grey[800]!.withOpacity(0.3),
                       ),
-                    ],
-                  ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.tips_and_updates,
+                                color: primaryGradient[0],
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Health Insight',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: primaryGradient[0],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            record.getRecommendation(),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                              height: 1.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-        );
+              ),
+            ));
       },
     );
   }

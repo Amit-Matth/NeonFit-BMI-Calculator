@@ -218,7 +218,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
         const SizedBox(height: 24),
 
-        // Height slider        HeightInputWidget(          height: _height,          onHeightChanged: (height) {            setState(() {              _height = height;            });          },        ),
+        // Height slider
+        HeightInputWidget(
+          height: _height,
+          onHeightChanged: (height) {
+            setState(() {
+              _height = height;
+            });
+          },
+        ),
+
         const SizedBox(height: 24),
 
         // Weight and age inputs
@@ -292,14 +301,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
         const SizedBox(height: 32),
 
-        // Re-calculate button
-        OutlinedButton(
-          onPressed: _resetCalculator,
-          child: const Text(
-            'RE-CALCULATE',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+        Container(
+          margin: const EdgeInsets.all(30), // Margin of 20
+          child: OutlinedButton(
+            onPressed: _resetCalculator,
+            style: OutlinedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12), // Less rounded corners
+              ),
+            ),
+            child: const Text(
+              'RE-CALCULATE',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ).animate().fadeIn(

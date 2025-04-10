@@ -22,6 +22,7 @@ class BMIDatabase {
 
     // Register the adapter
     Hive.registerAdapter(BMIRecordAdapter());
+    Hive.registerAdapter(GenderAdapter());
 
     // Open the box
     _box = await Hive.openBox<BMIRecord>(_boxName);
